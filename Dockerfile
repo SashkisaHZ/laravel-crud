@@ -40,4 +40,5 @@ CMD ["apache2-foreground"]
 
 
 # Install essential PHP extensions for Laravel
-RUN docker-php-ext-install pdo pdo_mysql
+RUN apt-get install -y libpq-dev && docker-php-ext-install pdo pdo_pgsql
+
