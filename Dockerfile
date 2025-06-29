@@ -38,6 +38,10 @@ RUN sed -ri -e 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf /e
 # Set permissions for storage and cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Run Laravel setup commands before Apache starts
+RUN php artisan config:clear && \
+    php artisan migrate --force
+
 EXPOSE 80
 CMD ["apache2-foreground"]
 
