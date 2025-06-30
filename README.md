@@ -1,3 +1,20 @@
+Security Assignment 1: The Skript Kiddie
+
+This Laravel Breeze project includes:
+- User registration and login
+- “Remember me” functionality
+- Auth-protected routes (e.g., /posts, /profile)
+
+🔐 Test users can register themselves or login manually.
+
+Routes requiring login:
+- /posts
+- /profile
+
+
+
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
