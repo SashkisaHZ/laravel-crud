@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Install required system packages
+# Install required system packages and PHP extensions
 RUN apt-get update && apt-get install -y \
     curl \
     unzip \
@@ -8,7 +8,8 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     zip \
     gnupg \
-    && docker-php-ext-install pdo pdo_mysql mysqli
+    libpq-dev \
+    && docker-php-ext-install pdo pdo_mysql mysqli pdo_pgsql
 
 # Enable Apache rewrite module for Laravel routes
 RUN a2enmod rewrite
@@ -25,27 +26,25 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy project files
-COPY . /var/www/html
+# Copy all project files
+COPY . .
 
-# Install dependencies (this is missing)
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Set correct Laravel public path in Apache
+# Install JS dependencies and build Vite assets
+RUN npm install && npm run build
+
+# Set correct Laravel public path in Apache config
 RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Set permissions for storage and cache
+# Set permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Run Laravel setup commands before Apache starts
-RUN php artisan config:clear && \
-    php artisan migrate --force
+# Clear Laravel config and ensure DB is migrated at runtime
+RUN php artisan config:clear
 
 EXPOSE 80
+
 CMD ["bash", "-c", "php artisan migrate --force && apache2-foreground"]
-
-
-# Install essential PHP extensions for Laravel
-RUN apt-get install -y libpq-dev && docker-php-ext-install pdo pdo_pgsql
-
