@@ -43,7 +43,7 @@ RUN php artisan config:clear && \
     php artisan migrate --force
 
 EXPOSE 80
-CMD ["apache2-foreground"]
+CMD ["bash", "-c", "php artisan migrate --force && apache2-foreground"]
 
 
 # Install essential PHP extensions for Laravel
